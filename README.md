@@ -10,10 +10,6 @@ Use [`crontab`](https://crontab.guru) for scheduling.
 
 _Tested on Python **3.12.2**_
 
-## 📋 Flags
-
-`silent` for no output.
-
 ## ⚙️ Config
 
 Stored in the same directory as the script. It's called `config.yaml`
@@ -23,3 +19,5 @@ Stored in the same directory as the script. It's called `config.yaml`
 | `db`        | `sqlite.db`   | Stores the path where the database to be backed up is located.              |
 | `backup_dir`| `./backups/`  | Sets the directory where backups are stored.                                |
 | `max_backups`| `5`          | Sets the maximum number of backups. Set to `-1` for no automatic deletion.  |
+| `compression`| `-1`         | Sets the compression level. `-1` to disable compression, `1-9` for levels.  |
+| `silent`    | `false`       | If set to `true`, suppresses output messages.                               |

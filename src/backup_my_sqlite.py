@@ -29,8 +29,12 @@ def get_config(key: str, default=None):
     global CONFIG
     return CONFIG[key] if key in CONFIG else default
 
-
-
 BACKUP_DIR = get_config('backup_dir', './backups/')
 DB_DIR = get_config('db', 'sqlite.db')
 MAX_BACKUPS = get_config('max_backups', 5)
+COMPRESSION_LEVEL = get_config('compression', -1)
+SILENT = get_config('silent', False)
+
+def log(*args):
+    if not SILENT:
+        print(*args)
