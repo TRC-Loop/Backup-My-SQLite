@@ -18,7 +18,9 @@ def load_config():
             yaml.dump({
                 'backup_dir': './backups/',
                 'db': 'sqlite.db',
-                'max_backups': 5
+                'max_backups': 5,
+                'compression': -1,
+                'silent': False
             }, file)
     with open('config.yaml') as file:
         return yaml.load(file, Loader=yaml.SafeLoader)
