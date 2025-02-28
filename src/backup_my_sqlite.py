@@ -18,7 +18,7 @@ def load_config():
     config_path = 'config.yaml'
     default_config = {
         'backup_dir': './backups/',
-        'db': 'sqlite.db',
+        'databases': ['sqlite.db'],
         'max_backups': 5,
         'compression': -1,
         'silent': False
@@ -45,33 +45,40 @@ def ensure_directory(path):
         log(f"Error creating directory {path}: {e}")
         sys.exit(1)
 
-def backup_database():
+def backup_database(db_path):
+    if not os.path.exists(db_path):
+        log(f"Database file not found: {db_path}")
+        return
+    
+    db_name = os.path.basename(db_path)
+    db_ext = os.path.splitext(db_name)[1]
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     unique_id = uuid.uuid4().hex
-    backup_path = os.path.join(BACKUP_DIR, f"{timestamp}_{unique_id}")
+    db_backup_dir = os.path.join(BACKUP_DIR, db_name)
+    ensure_directory(db_backup_dir)
+    
+    backup_filename = f"{db_name}_{timestamp}_{unique_id}{db_ext if COMPRESSION_LEVEL == -1 else '.zip'}"
+    backup_path = os.path.join(db_backup_dir, backup_filename)
     
     try:
         if COMPRESSION_LEVEL == -1:
-            backup_file = f"{backup_path}{DB_EXTENSION}"
-            shutil.copy(DB, backup_file)
+            shutil.copy(db_path, backup_path)
         else:
-            backup_file = f"{backup_path}.zip"
             compression = zipfile.ZIP_STORED if COMPRESSION_LEVEL == 0 else zipfile.ZIP_DEFLATED
-            with zipfile.ZipFile(backup_file, 'w', compression=compression) as zipf:
-                zipf.write(DB, os.path.basename(DB))
-        
-        log(f"Backup successful: {backup_file}")
+            with zipfile.ZipFile(backup_path, 'w', compression=compression) as zipf:
+                zipf.write(db_path, db_name)
+        log(f"Backup successful: {backup_path}")
     except Exception as e:
-        log(f"Backup failed: {e}")
-        sys.exit(1)
+        log(f"Backup failed for {db_name}: {e}")
+        return
     
     if MAX_BACKUPS != -1:
-        cleanup_old_backups()
+        cleanup_old_backups(db_backup_dir)
 
-def cleanup_old_backups():
+def cleanup_old_backups(db_backup_dir):
     try:
         backups = sorted(
-            [os.path.join(BACKUP_DIR, f) for f in os.listdir(BACKUP_DIR)],
+            [os.path.join(db_backup_dir, f) for f in os.listdir(db_backup_dir)],
             key=os.path.getctime, reverse=True
         )
         
@@ -87,16 +94,12 @@ def cleanup_old_backups():
 
 CONFIG = load_config()
 BACKUP_DIR = get_config('backup_dir', './backups/')
-DB = get_config('db', 'sqlite.db')
+DATABASES = get_config('databases', ['sqlite.db'])
 MAX_BACKUPS = get_config('max_backups', 5)
 COMPRESSION_LEVEL = get_config('compression', -1)
 SILENT = get_config('silent', False)
-DB_EXTENSION = os.path.splitext(DB)[1]
 
 ensure_directory(BACKUP_DIR)
 
-if not os.path.exists(DB):
-    log(f"Database file not found: {DB}")
-    sys.exit(1)
-
-backup_database()
+for db in DATABASES:
+    backup_database(db)

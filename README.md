@@ -16,7 +16,7 @@ Stored in the same directory as the script. It's called `config.yaml`
 
 | Key         | Default       | Explanation                                                                 |
 |-------------|---------------|-----------------------------------------------------------------------------|
-| `db`        | `sqlite.db`   | Stores the path where the database to be backed up is located.              |
+| `db`        | `- sqlite.db`   | Stores the path where the databases to be backed up is located (List!).              |
 | `backup_dir`| `./backups/`  | Sets the directory where backups are stored.                                |
 | `max_backups`| `5`          | Sets the maximum number of backups. Set to `-1` for no automatic deletion.  |
 | `compression`| `-1`         | Sets the compression level. `-1` to disable compression, `1-9` for levels.  |
