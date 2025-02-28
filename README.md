@@ -8,6 +8,8 @@ Use [`crontab`](https://crontab.guru) for scheduling.
 
 > **Note**: On 💠 Windows, there is no Crontab. Here is a [different approach](https://docs.active-directory-wp.com/Usage/How_to_add_a_cron_job_on_Windows/Scheduled_tasks_and_cron_jobs_on_Windows/index.html)
 
+_Tested on Python **3.12.2**_
+
 ## 📋 Flags
 
 `silent` for no output.
